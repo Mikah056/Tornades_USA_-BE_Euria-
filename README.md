@@ -1,4 +1,4 @@
-# Tornades_USA_-BE_Euria-
+# Tornades_USA_BE_Euria
 Ce projet est réalisé dans le cadre du bureau d'étude de Master1 à l'Euro-Institut d'Actuariat de Brest.
 
 Le sujet de ce BE est l’estimation de l’exposition au risque de tornade pour le périmètre 
