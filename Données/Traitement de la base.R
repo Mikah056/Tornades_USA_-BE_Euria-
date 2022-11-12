@@ -58,7 +58,7 @@ View(Alldata[[1972]])
 #Suppression des variables inutiles
 Alldata1=NULL
 for (i in 1950:2022) {
-  Alldata1[[i]]=Alldata[[i]][,-c(3,6,7,10,14,15,16,17,18,19,20,27,28,29,30,31,35,36,37,38,49,50,51)]
+  Alldata1[[i]]=Alldata[[i]][,-c(1,2,3,4,5,6,7,10,14,15,16,17,19,27,28,29,30,31,35,36,37,38,49,50,51)]
 }
 
 #Suppression des lignes des evevenements autres que les tornades
@@ -74,7 +74,33 @@ for (i in 1951:2022) {
 }
 
 #Suppression de la colonne 'tornade'
-Data=Data[,-9]
+Data=Data[,-5]
+
+## Traitement des dates
+library(lubridate)
+library(nycflights13)
+
+Data$BEGIN_DATE_TIME = dmy_hms(Data$BEGIN_DATE_TIME)
+dtm=Data$BEGIN_DATE_TIME
+dtm6=Data$YEAR
+dtm1=month(dtm)
+dtm2=mday(dtm)
+dtm3=hour(dtm)
+dtm4=minute(dtm)
+dtm5=second(dtm)
+L = make_datetime(dtm6, dtm1, dtm2, dtm3, dtm4, dtm5)
+Data$BEGIN_DATE_TIME = L
+
+Data$END_DATE_TIME = dmy_hms(Data$END_DATE_TIME)
+dtm=Data$END_DATE_TIME
+dtm6=Data$YEAR
+dtm1=month(dtm)
+dtm2=mday(dtm)
+dtm3=hour(dtm)
+dtm4=minute(dtm)
+dtm5=second(dtm)
+L = make_datetime(dtm6, dtm1, dtm2, dtm3, dtm4, dtm5)
+Data$END_DATE_TIME = L
 
 View(Data)
 
@@ -242,7 +268,7 @@ Data = Data[-which(is.na(Data$BEGIN_LON)),]
 ########################################################################
 
 #Base provisoire pour evolution dans R-shiny
-Base=Data[which(Data$YEAR>=2010),]
+Base=Data[which(Data$YEAR>=2001),]
 #Exportation de la base Details obtenue
 write.csv(Base,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv',row.names = FALSE)
 
