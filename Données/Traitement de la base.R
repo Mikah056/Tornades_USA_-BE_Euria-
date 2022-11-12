@@ -236,6 +236,15 @@ Data = Data[-which(is.na(Data$BEGIN_LON)),]
 ########################################################################
 ########################################################################
 
+#Base provisoire pour evolution dans R-shiny
+Base=Data[which(Data$YEAR>=2010),]
+#Exportation de la base Details obtenue
+write.csv(Base,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv',row.names = FALSE)
+
+########################################################################
+########################################################################
+
+
 
 ########################################################################
 ####### Traitement des valeurs manquantes
