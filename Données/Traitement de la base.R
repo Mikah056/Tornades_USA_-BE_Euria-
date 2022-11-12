@@ -5,6 +5,11 @@
 ## Exportation et importation des bases obtenues
 ###########################################################################
 
+## Importation de la base Details provisoire
+Data=read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv',header=TRUE)
+
+
+
 ## Importation de la base Details
 Data=read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv',header=TRUE)
 View(Data)
