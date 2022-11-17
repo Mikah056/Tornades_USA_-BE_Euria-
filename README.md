@@ -8,7 +8,7 @@ L’objectif est la mise en place d’un algorithme identifiant, pour un périm�
 géographique donné, les tornades ayant historiquement impactées ce site ainsi que 
 la paramétrisation d’un modèle fréquence et de coût pour la tarification d’une 
 couverture indicielle pour ce risque. 
-Le langage de développement utilisé est R, et l’équipe d’encadrants internationale.
+Le langage de développement utilisé est R.
 
 Les données utilisées sont celles fournies par la NOAA :
 https://www.ncdc.noaa.gov/stormevents/ftp.jsp 
