@@ -1,9 +1,0 @@
-##Evolution des frequences de tornade
-frequence=c()
-for (i in 1980:2022) {
-  frequence=c(frequence,sum(Data$YEAR==i))
-}
-v2=cbind(annee,frequence)
-plot(v2)
-lines(v2,col="red",main="Evolution des frÃ©quences de tornade")
-
