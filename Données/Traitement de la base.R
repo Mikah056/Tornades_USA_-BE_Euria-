@@ -6,8 +6,8 @@
 ###########################################################################
 
 ## Importation de la base Details provisoire
-Data=read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv',header=TRUE)
-
+Datap=read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv',header=TRUE)
+View(Datap)
 
 
 ## Importation de la base Details
@@ -228,19 +228,20 @@ apply(apply(datam[which(Data$YEAR>2010),],2,is.na),2,sum)
 
 ## Repartition des NA par annee
 Nombre_NA=c()
-for (i in 1955:2022) { 
+for (i in 1980:2022) { 
   Nombre_NA=c(Nombre_NA,sum(apply(apply(datam[which(Data$YEAR==i),],2,is.na),2,sum)))
 }
 Annees=1955:2022
 v1=cbind(Annees,Nombre_NA)
-v1=as.data.frame(v1)
+v1=as.data.frame(table(Data$YEAR))
+colnames(v1)=c("Annees","Nombre_NA")
 p = ggplot(data=v1,mapping=aes(x=Annees,y=Nombre_NA)) +
-  geom_line(color="blue") +
   geom_point() +
+  geom_line(color="blue") +
   xlab("Annees") + ylab("Nombre de valeurs manquantes")
 p 
 
-
+View(datam)
 
 #Proportion de NA dans chaque variable
 l=nrow(datam[which(Data$YEAR>=2000),])
@@ -253,7 +254,7 @@ write.csv(na2,file='C:/Hakim/D1/Euria/M1/BE/Data/na2.csv',row.names = TRUE)
 
 #Nombre de tornade n'ayant pas d'information d'arrivee sachant qu'elles n'ont pas
 #d'information de depart
-length(Data$END_LON[which(is.na(Data$BEGIN_LON))])
+length(is.na(Data$END_LON[which(is.na(Data$BEGIN_LON))]))
 
 #Proportion des tornades dont nous n'avons aucune information geographique
 (1191/length(Data$YEAR>=1980))*100
@@ -262,7 +263,12 @@ length(Data$END_LON[which(is.na(Data$BEGIN_LON))])
 
 #Suppression des individus n'ayant pas d'information de localisation
 length(which(is.na(Data$BEGIN_LAT) & is.na(Data$BEGIN_LON) & is.na(Data$END_LAT) & is.na(Data$END_LON)))
-Data = Data[-which(is.na(Data$BEGIN_LON)),]
+Data = Data[-which(is.na(Data$BEGIN_LAT) & is.na(Data$BEGIN_LON) & is.na(Data$END_LAT) & is.na(Data$END_LON)),]
+
+
+#Suppression des tornades en deca de 1980
+Data = Data[-which(Data$YEAR<1980),]
+
 
 ########################################################################
 ########################################################################
