@@ -221,7 +221,7 @@ p = ggplot(data=B, aes(y=Nombre_de_valeurs_manquantes,x=Variables)) +
 p + coord_flip()
 
 #Pourcentage des observations manquantes apres 1985
-datam=Data[,13:27]
+datam=Data[,11:25]
 (apply(apply(datam[which(Data$YEAR>1985),],2,is.na),2,sum)/apply(apply(datam,2,is.na),2,sum))*100
 apply(apply(datam[which(Data$YEAR>2010),],2,is.na),2,sum)
 
