@@ -269,6 +269,14 @@ Data = Data[-which(is.na(Data$BEGIN_LAT) & is.na(Data$BEGIN_LON) & is.na(Data$EN
 #Suppression des tornades en deca de 1980
 Data = Data[-which(Data$YEAR<1980),]
 
+#Traitement de la variable de fujita
+Data[which(Data$TOR_F_SCALE=="F0"),13] = "EF0"
+Data[which(Data$TOR_F_SCALE=="F1"),13] = "EF1"
+Data[which(Data$TOR_F_SCALE=="F2"),13] = "EF2"
+Data[which(Data$TOR_F_SCALE=="F3"),13] = "EF3"
+Data[which(Data$TOR_F_SCALE=="F4"),13] = "EF4"
+Data[which(Data$TOR_F_SCALE=="F5"),13] = "EF5"
+
 
 ########################################################################
 ########################################################################
