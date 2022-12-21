@@ -267,7 +267,7 @@ Data = Data[-which(is.na(Data$BEGIN_LAT) & is.na(Data$BEGIN_LON) & is.na(Data$EN
 
 
 #Suppression des tornades en deca de 1980
-Data = Data[-which(Data$YEAR<1980),]
+Data = Data[-which(Data$YEAR<1990),]
 
 #Traitement de la variable de fujita
 Data[which(Data$TOR_F_SCALE=="F0"),13] = "EF0"
