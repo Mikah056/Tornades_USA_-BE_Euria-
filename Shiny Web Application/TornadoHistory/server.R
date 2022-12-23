@@ -29,8 +29,23 @@ function(input, output, session) {
       filter(selectedData3()$YEAR <= input$year_sup)    
   })
  
+
   
- 
+  # Contenu du popup en HTML
+  selectedData5 <- reactive({
+    selectedData4() %>% 
+    mutate(
+      popup = paste0(
+        "<b>","State : ", STATE,
+        "<br>","<b>","Begin date : " , BEGIN_DATE_TIME,
+        "<br>","<b>","Begin location : ", BEGIN_LOCATION,
+        "<br>","<b>","Ene date : " , END_DATE_TIME,
+        "<br>","<b>","End location : ", END_LOCATION
+        )
+    )
+  })
+  
+  
   # L'observe permet de maintenir la réactivité sur les couleurs
   observe({  
   colorBy <- c("EF0","EF1","EF2","EF3","EF4","EF5") 
@@ -39,12 +54,14 @@ function(input, output, session) {
 output$mymap <- renderLeaflet({
 
     leaflet() %>% 
-      addTiles() %>%
-      addCircleMarkers(data = selectedData4(), lat =  ~BEGIN_LAT, lng = ~BEGIN_LON, 
+    addProviderTiles("Esri.OceanBasemap") %>%
+      addCircleMarkers(data = selectedData5(), lat =  ~BEGIN_LAT, lng = ~BEGIN_LON, 
                        radius = 3, 
-                       fillColor = pal(selectedData4()$TOR_F_SCALE),
+                       fillColor = pal(selectedData5()$TOR_F_SCALE),
+                       popup = ~popup, popupOptions = 
+                         list(maxHeight = 150, maxWidth = 200),
                        stroke = FALSE, fillOpacity = 0.8) %>%
-     addLegend("bottomleft", pal=pal, values=selectedData4()$TOR_F_SCALE,
+     addLegend("bottomleft", pal=pal, values=selectedData5()$TOR_F_SCALE,
               layerId="colorLegend")
   
   })

@@ -1,5 +1,5 @@
 
-navbarPage("Tornadoe's Tracker",
+navbarPage("Tornado Tracker",
            tabPanel("Map",
               fluidPage(theme = shinytheme("flatly")),
                     tags$head(
