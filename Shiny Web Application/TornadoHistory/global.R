@@ -1,6 +1,6 @@
 
 # Packages utilisés
-pacotes = c("RColorBrewer","htmltools","DT","dplyr","tidyverse","nycflights13","lubridate","leaflet","shiny", "shinydashboard", "shinythemes", "plotly", "shinycssloaders","tidyverse",
+pacotes = c("geojsonio","geojson","RColorBrewer","htmltools","DT","dplyr","tidyverse","nycflights13","lubridate","leaflet","shiny", "shinydashboard", "shinythemes", "plotly", "shinycssloaders","tidyverse",
             "scales", "knitr", "kableExtra", "ggfortify","dplyr","plotly","FNN")
 
 # Installation des packages manquants

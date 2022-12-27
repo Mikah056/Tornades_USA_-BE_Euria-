@@ -1,4 +1,5 @@
 
+#Téléchargement des données
 Datap <- read.csv("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv", stringsAsFactors = TRUE )
 Datap <- data.frame(Datap[sample(1:nrow(Datap),300),])  #On prend juste 300 pour le test
 Datap$BEGIN_LAT <-  as.numeric(Datap$BEGIN_LAT)
@@ -6,19 +7,20 @@ Datap$BEGIN_LON <-  as.numeric(Datap$BEGIN_LON)
 
 
 function(input, output, session) {
-  
+ 
+  #Prise en compte du tri suivant les mois 
   selectedData1 <- reactive({
     Datap %>%
       filter(Datap$MONTH_NAME %in% input$tri_mois)
   })
   
-  
+ #Prise en compte du tri suivant les échelles 
   selectedData2 <- reactive({
     selectedData1() %>%
       filter(selectedData1()$TOR_F_SCALE %in% input$Echelle)
   })
   
-  
+ #Prise en compte du tri suivant les années 
   selectedData3 <- reactive({
     selectedData2() %>% 
   filter(selectedData2()$YEAR >= input$year_inf)
@@ -31,7 +33,7 @@ function(input, output, session) {
  
 
   
-  # Contenu du popup en HTML
+  # Définition du contenu des popup en HTML
   selectedData5 <- reactive({
     selectedData4() %>% 
     mutate(
@@ -45,11 +47,18 @@ function(input, output, session) {
     )
   })
   
+  ############################### Colorier les etats par niveau de sinistralité
+  
+ 
+  
+  ########################################### FIN
+  
+  
   
   # L'observe permet de maintenir la réactivité sur les couleurs
   observe({  
   colorBy <- c("EF0","EF1","EF2","EF3","EF4","EF5") 
-  pal <- colorFactor(c("#26C4EC","#00FF00","#C2F732","#ED7F10","#FF0000","#F9429E"), colorBy, ordered = TRUE) 
+  pal <- colorFactor(c("#26C4EC","#00FF00","#FFFF00","#CC5500","#FF0000","#A10684"), colorBy, ordered = TRUE) 
   
 output$mymap <- renderLeaflet({
 
@@ -63,6 +72,23 @@ output$mymap <- renderLeaflet({
                        stroke = FALSE, fillOpacity = 0.8) %>%
      addLegend("bottomleft", pal=pal, values=selectedData5()$TOR_F_SCALE,
               layerId="colorLegend")
+  
+    ############################### Colorier les etats par niveau de sinistralité 
+  
+  # create a red polyline from an array of LatLng points
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  ########################################### FIN
+  
   
   })
   })
