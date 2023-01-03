@@ -42,7 +42,10 @@ navbarPage("Tornado Tracker",
            
            
            
-           tabPanel("Stat_desc"),
+           tabPanel("Stat_desc",br(),
+                    span("EVOLUTION DES TORNADES"),plotOutput('graph'),br(),br(),br(),span("ECHELLE DE FUJITA"),
+                    br(),br(),br(),
+                    plotOutput('graph1'),br(),br()),
            
            
            
