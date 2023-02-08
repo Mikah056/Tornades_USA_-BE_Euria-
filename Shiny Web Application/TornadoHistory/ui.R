@@ -8,8 +8,8 @@ navbarPage("Tornado Tracker",
                       headerPanel(''),
                       sidebarPanel(width = 3,
                                    checkboxGroupInput(inputId = "Echelle",
-                                                      label = "Filter by Fujita's scale", choices = c("EF0","EF1","EF2","EF3","EF4","EF5"), 
-                                                      selected = c("EF0"="EF0","EF1"="EF1","EF2"="EF2"),inline=FALSE),
+                                                      label = "Filter by Fujita scale", choices = c("EF0","EF1","EF2","EF3","EF4","EF5"), 
+                                                      selected = c("EF3"="EF3","EF4"="EF4","EF5"="EF5"),inline=FALSE),
   
                   ##### Bout de code copie dans Masters Pokemon #####        
                 
@@ -30,6 +30,13 @@ navbarPage("Tornado Tracker",
                   
                   selectInput('tri_mois', 'Filter by months',choices=month.name,selected=c("April","May"),multiple=TRUE),
                   
+                  
+                  checkboxGroupInput(inputId = "MapDetails",
+                                     label = "Display the :", choices = c("Starting points","Tornadoe's trajectories","Frequencies by state"), 
+                                     selected = c("Starting points"="Starting points"), inline = FALSE),
+                  
+                  
+                  
                              submitButton("Update filters")
                       ),
                   
@@ -42,10 +49,7 @@ navbarPage("Tornado Tracker",
            
            
            
-           tabPanel("Stat_desc",br(),
-                    span("EVOLUTION DES TORNADES"),plotOutput('graph'),br(),br(),br(),span("ECHELLE DE FUJITA"),
-                    br(),br(),br(),
-                    plotOutput('graph1'),br(),br()),
+           tabPanel("Stat_desc"),
            
            
            

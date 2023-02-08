@@ -1,13 +1,22 @@
 
 #Téléchargement des données
-Datap <- read.csv("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_P.csv", stringsAsFactors = TRUE )
-Datap <- data.frame(Datap[sample(1:nrow(Datap),1000),])  #On prend juste 300 pour le test
+Datap <- read.csv("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv", stringsAsFactors = TRUE )
+Datap <- data.frame(Datap[which(Datap$YEAR>1995),])  #On prend des 1996 pour eviter les donnees manquantes dans un premier temps
 Datap$BEGIN_LAT <-  as.numeric(Datap$BEGIN_LAT)
 Datap$BEGIN_LON <-  as.numeric(Datap$BEGIN_LON)
+
+# Charger le fichier GeoJSON des formes des etats
+states = geojson_read("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/State_geometry.geojson", what = "sp")
+
+#Mettre les noms des etats en majuscule
+states$name <- toupper(states$name)
 
 
 function(input, output, session) {
  
+######################################################################
+##################################### PRISE EN COMPTE DES TRIS
+  
   #Prise en compte du tri suivant les mois 
   selectedData1 <- reactive({
     Datap %>%
@@ -31,43 +40,7 @@ function(input, output, session) {
       filter(selectedData3()$YEAR <= input$year_sup)    
   })
   
-  #PARTIE ROMAIN
-  
-  #graphique des stats descriptive
-  datasetInput<- reactive({
-    Datap 
-  })
-  
-  output$graph<-renderPlot({
-    library(gridExtra)
-    library(cowplot)
-    vaz= datasetInput()
-    #Evolution des fréquence au fil des années
-    library(ggplot2)
-    f1 = as.data.frame(table(vaz$YEAR))
-    f1[,1] = as.factor(f1[,1])
-    f = ggplot(data=f1,aes(x=Var1,y=Freq,group=1)) +
-      geom_line(color="blue") +
-      geom_point() +
-      xlab("Annees") + ylab("Fréquence des tornades") +
-      theme(axis.text.x = element_text(angle=70, vjust=0.5))
-    f 
-    
-  })
-  output$graph1=renderPlot({
-    vaz=datasetInput()
-    
-    a = ggplot(vaz, aes(x = TOR_F_SCALE)) +
-      geom_bar(stat = "count") +                      # Bâtons
-      theme(legend.position = "none") +               # Enlève la légende
-      xlab("Echelle de Fujita") +                                      # Axe des x, non pertinent
-      ylab("fréquence")                               # Axe des y
-    a
-    
-  })
- 
 
-  
   # Contenu du popup en HTML
   selectedData5 <- reactive({
     selectedData4() %>% 
@@ -83,18 +56,10 @@ function(input, output, session) {
   })
   
 
+################################# Fin de la prise en compte des tris 
+###########################################################################  
   
   
-  ############################### Colorier les etats par niveau de sinistralité
-  
-  
-  
-  
-  
-  
-  
-  
-  ########################################### FIN
   
   
   
@@ -103,8 +68,8 @@ function(input, output, session) {
     colorBy <- c("EF0","EF1","EF2","EF3","EF4","EF5") 
     pal <- colorFactor(c("#26C4EC","#00FF00","#C2F732","#ED7F10","#FF0000","#F9429E"), colorBy, ordered = TRUE) 
     
-    
-  ########### Construction des vecteurs de trajectoire    
+#################################################################
+###################### Construction des vecteurs de trajectoire    
     lines = list()
     for (i in 1:nrow(selectedData5())) { 
       # Créer un objet de points pour chaque ligne
@@ -164,31 +129,80 @@ function(input, output, session) {
       );
     }
     
+######################## FIN de la construction des Vecteurs
+#################################################################
+       
     
+#################################################################    
+############################ Cette partie defini le chronoplet
     
+    #Calculer la table de proportion par etat
+    tab <-  table(selectedData5()$STATE)/(max(selectedData5()$YEAR)-min(selectedData5()$YEAR)+1)
     
-######## FIN Vecteurs   
+    # Récupérer les noms des états qui ne se trouvent pas dans tab
+    etats_manquants <-  setdiff(states$name, names(tab) )
     
-    
-    
-################ Construction de la base pour colorier les etats    
-    
-    
-    
-    
-    
-    
- ##################### Fin    
-    
-    
-    output$mymap <- renderLeaflet({
+    # Ajouter les états manquants à ma_table avec une valeur de fréquence de 0
+      for (etat in etats_manquants) {
+        tab[etat] <- 0
+      }
+    tab <- tab[-which(names(tab)=="VIRGIN ISLANDS")]
       
-    leaflet(selectedData5()) %>% setView(lng = -98.583, lat = 39.833, zoom = 4) %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-     #   addPolylines(data = sldf, color = ~colorFactor(sldf$couleur, palette = colorScale))  %>%
-        addGeoJSON(geojson,
-                 weight = 4) %>%
-     #   addPolylines(data = lines_sf, color = ~couleur, weight = 4) %>%
+    # Ajouter les fréquences de tornade a la table 
+    states$freq <- tab[match(states$name, names(tab))]
+    
+    # Créer la carte avec addPolygons() et l'échelle de couleur
+    labels <- sprintf(
+      "<strong>%s</strong><br/>%g tornade(s) en moyenne,<br/> entre %s et %s",
+      states$name, states$freq, min(selectedData5()$YEAR), max(selectedData5()$YEAR)
+    ) %>% lapply(htmltools::HTML)
+    
+    #Definition de l'echelle de couleur
+    l=(max(states$freq)-min(states$freq))/10
+    bins <- c(0, l, 2*l, 3*l, 4*l, 5*l, 6*l, 7*l, 8*l, 9*l, max(states$freq))
+    pal2 <- colorBin("Reds", domain = states$freq, bins = bins)
+    # "YlOrRd" / "Reds" / ...
+   
+############################### Fin du chronopleth   
+###################################################    
+    
+   
+    
+     
+########################################################
+########################## Construction de la carte
+
+  output$mymap <- renderLeaflet({
+      
+    map = leaflet() %>% setView(lng = -98.583, lat = 39.833, zoom = 4) %>%
+        addProviderTiles("Esri.OceanBasemap")  
+    
+    if (any(input$MapDetails == "Frequencies by state")) {
+      map = map %>%
+        addPolygons(data = states,
+                    fillColor = ~pal2(freq),
+                    weight = 1,
+                    opacity = 2,
+                    color = "black",
+                    dashArray = "2",
+                    fillOpacity = 7,
+                    label = labels,
+                    labelOptions = labelOptions(
+                      style = list("font-weight" = "normal", padding = "3px 8px"),
+                      textsize = "15px",
+                      direction = "auto")) %>%
+        addLegend(pal = pal2, values = states$freq, opacity = 0.7, title = NULL, position = "bottomright") 
+    } 
+    
+    
+    if (any(input$MapDetails == "Tornadoe's trajectories")) { 
+        map = map %>%
+              addGeoJSON(geojson,
+                           weight = 4) 
+      } 
+    
+    if (any(input$MapDetails == "Starting points")) { 
+      map = map %>% 
         addCircleMarkers(data = selectedData5(), lat =  ~BEGIN_LAT, lng = ~BEGIN_LON, 
                          radius = 3, 
                          fillColor = pal(selectedData5()$TOR_F_SCALE),
@@ -196,15 +210,28 @@ function(input, output, session) {
                            list(maxHeight = 150, maxWidth = 200),
                          stroke = FALSE, fillOpacity = 0.8) %>%
         addLegend("bottomleft", pal=pal, values=selectedData5()$TOR_F_SCALE,
-                  layerId="colorLegend") 
+                  layerId="colorLegend")
+    } 
+                      
+      
+    map
       
       
-      ############################### Colorier les etats par niveau de sinistralité 
+    #   addProviderTiles("MapBox", options = providerTileOptions(
+   #     id = "mapbox.light",
+   #     accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
       
       
       
-      ########################################### FIN
+     #   addPolylines(data = sldf, color = ~colorFactor(sldf$couleur, palette = colorScale))  %>%
+        
+     #   addPolylines(data = lines_sf, color = ~couleur, weight = 4) %>%
+        
       
+      
+    
+    
+    
       
     })
   })

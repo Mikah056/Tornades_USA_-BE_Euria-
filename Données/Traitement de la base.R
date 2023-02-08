@@ -58,7 +58,7 @@ View(Alldata[[1972]])
 #Suppression des variables inutiles
 Alldata1=NULL
 for (i in 1950:2022) {
-  Alldata1[[i]]=Alldata[[i]][,-c(1,2,3,4,5,6,7,10,14,15,16,17,19,27,28,29,30,31,35,36,37,38,49,50,51)]
+  Alldata1[[i]]=Alldata[[i]][,-c(1,2,3,4,5,6,7,10,14,17,19,27,28,29,30,31,35,36,37,38,49,50,51)]
 }
 
 #Suppression des lignes des evevenements autres que les tornades
@@ -266,16 +266,16 @@ length(which(is.na(Data$BEGIN_LAT) & is.na(Data$BEGIN_LON) & is.na(Data$END_LAT)
 Data = Data[-which(is.na(Data$BEGIN_LAT) & is.na(Data$BEGIN_LON) & is.na(Data$END_LAT) & is.na(Data$END_LON)),]
 
 
-#Suppression des tornades en deca de 1980
+#Suppression des tornades en deca de 1990
 Data = Data[-which(Data$YEAR<1990),]
 
 #Traitement de la variable de fujita
-Data[which(Data$TOR_F_SCALE=="F0"),13] = "EF0"
-Data[which(Data$TOR_F_SCALE=="F1"),13] = "EF1"
-Data[which(Data$TOR_F_SCALE=="F2"),13] = "EF2"
-Data[which(Data$TOR_F_SCALE=="F3"),13] = "EF3"
-Data[which(Data$TOR_F_SCALE=="F4"),13] = "EF4"
-Data[which(Data$TOR_F_SCALE=="F5"),13] = "EF5"
+Data[which(Data$TOR_F_SCALE=="F0"),15] = "EF0"
+Data[which(Data$TOR_F_SCALE=="F1"),15] = "EF1"
+Data[which(Data$TOR_F_SCALE=="F2"),15] = "EF2"
+Data[which(Data$TOR_F_SCALE=="F3"),15] = "EF3"
+Data[which(Data$TOR_F_SCALE=="F4"),15] = "EF4"
+Data[which(Data$TOR_F_SCALE=="F5"),15] = "EF5"
 
 
 ########################################################################
