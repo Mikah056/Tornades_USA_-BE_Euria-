@@ -13,11 +13,11 @@ library(sp)
 #?spDists
 
 # Chargement des données sur les tornades
-Base <- read.csv2("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv", sep = ",", stringsAsFactors = TRUE,  dec = ".")
+Base <- read.csv2("C:/Users/User/OneDrive_ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv", sep = ",", stringsAsFactors = TRUE,  dec = ".")
 #On considère les données à partir de 1990, et on garde juste les longitudes et depart,
 #car elles n'ont pas de valeurs manquantes
 apply(apply(Base[which(Base$YEAR>=1990),c(24,25,26,27)],2,is.na),2,sum)
-Base = Base[which(Base$YEAR>=1990),c(2,15,25,24)]
+Base = Base[which(Base$YEAR>=2020),c(2,15,25,24)]
 #View(Base)
 
 
@@ -36,8 +36,9 @@ distmatrix <- sp::spDists(x = dtest, longlat = T) #Renvoie la matrice des distan
  dd=distmatrix
 
 #Exportation
-filename = "C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Tornades_USA_BE_Euria/Modélisations/distmatrix.csv"
-write.csv2(distmatrix,filename, sep = ";", dec = ".")
+filename = "C:/Users/User/OneDrive_ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Tornades_USA_BE_Euria/Modélisations/distmatrix.csv"
+#write.csv2(distmatrix,filename, sep = ";", dec = ".")
+D0 = read.csv(filename,header=TRUE)
 
 #conversion de la matrice en objet dist. Sinon pas utilisable par hclust
 distmatrix <- stats::as.dist(distmatrix) 
@@ -334,6 +335,9 @@ filename = "C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Tornade
 x = read.csv(filename, sep = ";", dec = ",")
 x
 summary(x)
+
+par(mfrow=c(3,1))
+
 ######################################
 ##### Parametre optimal (qui maximise la probabilité d'appartenance)
 ## 84, choisi par observation graphique
@@ -355,9 +359,79 @@ results = data.frame(Base)
 x <- cbind(results, hdb$cluster)
 #Stockage
 filename = "C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Tornades_USA_BE_Euria/Modélisations/HDBSCAN_Clustering_Final.csv"
-write.csv2(x,filename, sep = ";", dec = ".")
+#write.csv2(x,filename, sep = ";", dec = ".")
 
 View(x)
+nrow(x)
+colnames(x)[5]='dd'
+unique(x$dd)
+colorBy <- unique(x$dd) 
+# c("#26C4EC","#00FF00","#C2F732","#ED7F10","#FF0000","#F9429E")
+# "YlOrRd"
+pal <- colorFactor(c("#FF0000","#26C4EC","#00FF00","#C2F732","#ED7F10","#F9429E"), colorBy, ordered = TRUE) 
+
+leaflet() %>% setView(lng = -98.583, lat = 39.833, zoom = 4) %>%
+  addProviderTiles("Esri.OceanBasemap") %>% 
+  addCircleMarkers(data = x, lat =  ~BEGIN_LAT, lng = ~BEGIN_LON, 
+                   radius = 3, 
+                   fillColor = pal(x$dd),
+                   stroke = FALSE, fillOpacity = 0.8) %>%
+  addLegend("bottomleft", pal=pal, values=x$dd,
+            layerId="colorLegend")
+
+
+#Arbre simplifie
+plot(hdb, show_flat = T, gradient = c("purple", "red", "green", "yellow","blue"), scale=0.5)
+plot(x[,c(3,4)],col=hdb$cluster+1L)
+
+## Arbre simplifie, avec les clusters les plus stables
+plot(hdb, scale = "suggest",
+     gradient = c("yellow","green","blue"), show_flat = TRUE)
+
+
+
+
+
+###########################################################
+######### Sous clustering ############
+
+#Importation
+filename = "C:/Users/User/OneDrive_ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Tornades_USA_BE_Euria/Modélisations/HDBSCAN_Clustering_Final.csv"
+base = read.csv2(filename, sep = ";", dec = ",")
+#View(base)
+base = base[which(base$hdb.cluster==4),-c(1,6)]
+dim(base)
+
+#####Construction de la matrice de dissimilarité
+coords <- base[,c(3,4)]
+
+## Creation d'un objet spatial
+dtest <- sp::SpatialPoints(coords = coords, proj4string = sp::CRS("+proj=longlat +ellps=WGS84")) #Non projet
+plot(dtest@coords)
+
+## Calcul de la matrice des distances geographiques (calculee avec une fonction du package sp)
+# Attention!!! Relativement long en temps de calcul, pour notre base d'environ 40000
+distmatrix <- sp::spDists(x = dtest, longlat = T) #Renvoie la matrice des distances en kilometres
+dd=distmatrix
+
+#conversion de la matrice en objet dist. Sinon pas utilisable par hclust
+distmatrix <- stats::as.dist(distmatrix) 
+
+
+#### Réalisation du clustering
+hdb <- dbscan::hdbscan(distmatrix, minPts = 20,
+                       gen_hdbscan_tree = TRUE,
+                       gen_simplified_tree = TRUE,
+                       verbose = TRUE)
+#21 donne 3 clusters
+#Recuperation des clusters
+results = data.frame(base)
+x <- cbind(results, hdb$cluster)
+#Stockage
+#filename = "C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Tornades_USA_BE_Euria/Modélisations/HDBSCAN_Clustering_Final.csv"
+#write.csv2(x,filename, sep = ";", dec = ".")
+
+#View(x)
 nrow(x)
 colnames(x)[5]='dd'
 unique(x$dd)
@@ -410,10 +484,65 @@ plot(hdb, scale = "suggest",
 
 
 
+
+
+
+
+
+
 ########
 #############################################################################
 #############################################################################
 
+############# Carte de chaleur
+# Installation de la bibliothèque leaflet.extras
+install.packages("leaflet.extras")
+
+# Chargement de la bibliothèque leaflet.extras
+library(leaflet.extras)
+
+library(leaflet)
+library(dplyr)
+
+# Chargement des données de tornades
+data <- read.csv("chemin/vers/le/fichier.csv")
+
+# Création de la carte
+map <- leaflet() %>%
+  setView(lng = -98.5795, lat = 39.8283, zoom = 4)
+
+# Ajout de la carte de chaleur
+map <- map %>% addTiles() %>% addHeatmap(
+  data = data,
+  lng = ~BEGIN_LON,
+  lat = ~BEGIN_LAT,
+  blur = 40,
+  max = 0.05
+)
+
+# Affichage de la carte
+map
+
+
+#######################
+
+
+library(ggplot2)
+library(maps)
+
+# Chargement des données de tornades
+data <- read.csv("chemin/vers/le/fichier.csv")
+
+# Création de la carte de chaleur
+usa_map <- map_data("state")
+
+ggplot(data, aes(x = BEGIN_LON, y = BEGIN_LAT)) +
+  geom_density2d(alpha = 0.4, bins = 30) +
+  scale_fill_gradient(low = "white", high = "red") +
+  geom_path(data = usa_map, aes(x = long, y = lat, group = group), color = "black", fill = NA) +
+  coord_fixed(xlim = c(-130, -60), ylim = c(25, 50)) +
+  ggtitle("Carte de chaleur des tornades aux États-Unis")
 
 
 
+########################################

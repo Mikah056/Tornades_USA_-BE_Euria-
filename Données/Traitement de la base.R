@@ -11,11 +11,11 @@ View(Datap)
 
 
 ## Importation de la base Details
-Data=read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv',header=TRUE)
+Data=read.csv(file='C:/Users/User/OneDrive_ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv',header=TRUE)
 View(Data)
 
 #Exportation de la base Details obtenue
-write.csv(Data,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv',row.names = FALSE)
+#write.csv(Data,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv',row.names = FALSE)
 
 
 #Importation de la base Locations
@@ -23,7 +23,7 @@ z=read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Da
 View(z)
 
 #Exportation de la base Locations obtenue
-write.csv(z,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_L.csv',row.names = FALSE)
+#write.csv(z,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE_L.csv',row.names = FALSE)
 
 ########################################################################
 ########################################################################

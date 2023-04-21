@@ -44,7 +44,8 @@ labels <- sprintf(
   states$NAME, states$freq, min(Data$YEAR), max(Data$YEAR)
 ) %>% lapply(htmltools::HTML)
 
-bins <- c(0, 10, 25, 50, Inf)
+bins <- c(0, 10, 25,50, Inf)
+#pal <- colorBin("Blues", domain = states$freq, bins = bins)
 pal <- colorBin(c("#26C4EC","#C2F732","#ED7F10","#FF0000"), domain = states$freq, bins = bins)
 
 m <- leaflet(states) %>%
@@ -59,7 +60,7 @@ addPolygons(label = ~STUSPS,labelOptions = labelOptions(noHide = TRUE, textOnly 
   color = "white",
   dashArray = "3",
   fillOpacity = 0.7) %>%
-  addLegend(pal = pal, values = ~freq, opacity = 0.7, title = NULL,
+  addLegend(pal = pal, values = ~freq, opacity = 0.7, title = "Fréquence moyenne annuelle",
             position = "bottomright") 
 
 m
@@ -97,13 +98,14 @@ for (i in 1:nrow(unique(Data[,c(2,5,6)]))) {
 
 base_freq=cbind(unique(Data[,c(2,5,6)]),freq)
 
-#Exportation de la base des effectif par comte sinistre
-write.csv(base_freq,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_freq_comte.csv',row.names = FALSE)
+#Exportation/Importation de la base des effectif par comte sinistre
+#write.csv(base_freq,file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_freq_comte.csv',row.names = FALSE)
 base_freq = read.csv(file='C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_freq_comte.csv')
 
 #On rajoute ces frequences a la base des comtes
 #frequence moyenne
 base_freq=cbind(unique(Data[,c(2,5,6)]),freq/32)
+base_freq[,4]=base_freq[,4]/32
 max(base_freq[,4])    #32 annees d'observation
 min(base_freq[,4])
 
@@ -153,19 +155,23 @@ m <- leaflet(counties) %>%
   addProviderTiles("MapBox", options = providerTileOptions(
     id = "mapbox.light",
     accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN'))) %>%
+  addPolygons(data=states,label = ~STUSPS, fillColor = NULL,
+              weight = 1,
+              opacity = 1,
+              color = "black",
+              dashArray = "1") %>%
   addPolygons(label = labels, labelOptions = labelOptions(
     style = list("font-weight" = "normal", padding = "3px 8px"),
     textsize = "15px",
     direction = "auto"),
               fillColor = ~pal(freq),
-              weight = 1,
-              opacity = 1,
+              weight = 0,
+              opacity = 0,
               color = "black",
-              dashArray = "5",
+              dashArray = "",
               fillOpacity = 0.7) %>%
-  addLegend(pal = pal, values = ~freq, opacity = 0.7, title = NULL,
-            position = "bottomright") %>%
-  addPolygons(data=states,label = ~STUSPS)
+  addLegend(pal = pal, values = ~freq, opacity = 0.7, title = "Fréquence moyenne par comté",
+            position = "bottomright") 
 
 m
 

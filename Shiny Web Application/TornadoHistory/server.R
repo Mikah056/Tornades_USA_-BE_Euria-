@@ -1,12 +1,12 @@
 
 #Téléchargement des données
-Datap <- read.csv("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv", stringsAsFactors = TRUE )
-Datap <- data.frame(Datap[which(Datap$YEAR>1995),])  #On prend des 1996 pour eviter les donnees manquantes dans un premier temps
+Datap <- read.csv("C:/Users/User/OneDrive_ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/Base_BE.csv", stringsAsFactors = TRUE )
+Datap <- data.frame(Datap[which(Datap$YEAR>1996),])  #On prend des 1996 pour eviter les donnees manquantes dans un premier temps
 Datap$BEGIN_LAT <-  as.numeric(Datap$BEGIN_LAT)
 Datap$BEGIN_LON <-  as.numeric(Datap$BEGIN_LON)
 
 # Charger le fichier GeoJSON des formes des etats
-states = geojson_read("C:/Users/User/OneDrive - ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/State_geometry.geojson", what = "sp")
+states = geojson_read("C:/Users/User/OneDrive_ENSEA/[L3]/Bureau/HAKIM_EURIA_M1/BE/Data/State_geometry.geojson", what = "sp")
 
 #Mettre les noms des etats en majuscule
 states$name <- toupper(states$name)

@@ -1,11 +1,11 @@
-"";"NbClusters";"NbIsoPts"
-"MinPts = 2";10;4
-"MinPts = 5";1562;12652
-"MinPts = 15";299;21248
-"MinPts = 40";6;471
-"MinPts = 90";2;454
-"MinPts = 150";2;508
-"MinPts = 350";3;11078
-"MinPts = 700";2;27047
-"MinPts = 1000";2;26813
-"MinPts = 2000";2;29292
+;NbClusters;NbIsoPts
+MinPts = 2;10;4
+MinPts = 5;1562;12652
+MinPts = 15;299;21248
+MinPts = 40;6;471
+MinPts = 90;2;454
+MinPts = 150;2;508
+MinPts = 350;3;11078
+MinPts = 700;2;27047
+MinPts = 1000;2;26813
+MinPts = 2000;2;29292
